@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="125dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
+    android:layout_margin="@dimen/five"
+    android:id="@+id/card_container"
+    android:layout_height="100dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/url_to_image_hot"
+        android:src="@mipmap/ic_launcher"
+        android:layout_width="match_parent"
+
+        android:layout_height="60dp" />
+
+    <com.example.dellpc.khabri.customUI.BloggerBoldTextView
+        android:id="@+id/hot_heading"
+        tools:text="Heading"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

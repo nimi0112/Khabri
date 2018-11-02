@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_margin="@dimen/five"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/ll_gadgets"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:id="@+id/imageView_url"
+            android:src="@mipmap/ic_launcher_round"
+            android:layout_height="wrap_content" />
+
+        <com.example.dellpc.khabri.customUI.BloggerMediumTextView
+            android:layout_width="0dp"
+            android:layout_weight="0.8"
+            android:id="@+id/title"
+            android:ellipsize="end"
+            android:textColor="@color/black"
+            android:layout_margin="@dimen/five"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <com.example.dellpc.khabri.customUI.MyRobotoRegularTextView
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/five"
+        android:text="Share"
+        android:gravity="center"
+        android:drawableLeft="@drawable/ic_menu_share"
+        android:layout_below="@+id/ll_gadgets"
+        android:layout_height="wrap_content" />
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

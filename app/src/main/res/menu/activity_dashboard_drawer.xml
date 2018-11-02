@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_local"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Local News" />
+        <item
+            android:id="@+id/nav_latest"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Latest" />
+        <item
+            android:id="@+id/nav_gadgets"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="Gadgets" />
+        <item
+            android:id="@+id/nav_entertainment"
+
+            android:title="Entertainment" />
+        <item
+            android:id="@+id/nav_india"
+
+            android:title="India" />
+        <item
+            android:id="@+id/nav_cricket"
+
+            android:title="Cricket" />
+        <item
+            android:id="@+id/nav_football"
+
+            android:title="Football" />
+        <item
+            android:id="@+id/nav_auto"
+
+            android:title="Automobile" />
+        <item
+            android:id="@+id/nav_science"
+
+            android:title="Science" />
+        <item
+            android:id="@+id/nav_trave"
+
+            android:title="Travel" />
+        <item
+            android:id="@+id/nav_food"
+
+            android:title="Food" />
+        <item
+            android:id="@+id/nav_disease"
+
+            android:title="Disease" />
+    </group>
+</menu>
