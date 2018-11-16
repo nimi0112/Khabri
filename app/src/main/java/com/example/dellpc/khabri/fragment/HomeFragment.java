@@ -3,9 +3,7 @@ package com.example.dellpc.khabri.fragment;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -26,7 +23,7 @@ import com.example.dellpc.khabri.R;
 import com.example.dellpc.khabri.adapters.Home_newsAdapter;
 import com.example.dellpc.khabri.model.NewsApiModel;
 import com.example.dellpc.khabri.network.HttpUrl;
-import com.example.dellpc.khabri.utils.Preference;
+import com.example.dellpc.khabri.data.SharedPrefsHelper;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
 import org.json.JSONArray;
@@ -72,7 +69,7 @@ public class HomeFragment extends Fragment {
     List<NewsApiModel> modelListArea= new ArrayList<>();
     List<NewsApiModel> modelListLatest= new ArrayList<>();
     private OnFragmentInteractionListener mListener;
-    private Preference mPref;
+    private SharedPrefsHelper mPref;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -85,7 +82,7 @@ public class HomeFragment extends Fragment {
         View view= inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this,view);
         mShimmerViewContainer = view.findViewById(R.id.shimmer_view_container);
-        mPref= new Preference(mContext);
+        mPref= new SharedPrefsHelper(mContext);
         try {
             gethomeTopics();
         } catch (IOException e) {

@@ -4,11 +4,8 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -22,7 +19,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.example.dellpc.khabri.CustomViewPager;
 import com.example.dellpc.khabri.R;
@@ -33,7 +29,7 @@ import com.example.dellpc.khabri.fragment.HomeFragment;
 import com.example.dellpc.khabri.fragment.TechnologyFragment;
 import com.example.dellpc.khabri.fragment.TrendingFragment;
 import com.example.dellpc.khabri.model.NewsApiModel;
-import com.example.dellpc.khabri.utils.Preference;
+import com.example.dellpc.khabri.data.SharedPrefsHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +43,7 @@ public class Dashboard extends AppCompatActivity
     private DrawerLayout drawer;
     private CustomViewPager viewPager;
     private FrameLayout content_frame;
-    private Preference mPref;
+    private SharedPrefsHelper mPref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +63,7 @@ public class Dashboard extends AppCompatActivity
         viewPager.setAdapter(adapter);
 
         viewPager.setOffscreenPageLimit(5);
-        mPref=new Preference(Dashboard.this);
+        mPref=new SharedPrefsHelper(Dashboard.this);
     }
 
     private void BindViews() {

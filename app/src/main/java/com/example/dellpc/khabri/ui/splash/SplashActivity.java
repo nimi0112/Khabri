@@ -1,7 +1,8 @@
-package com.example.dellpc.khabri.activity;
+package com.example.dellpc.khabri.ui.splash;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -16,7 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dellpc.khabri.R;
-import com.example.dellpc.khabri.utils.Preference;
+import com.example.dellpc.khabri.activity.Dashboard;
+import com.example.dellpc.khabri.data.DataManager;
+import com.example.dellpc.khabri.data.SharedPrefsHelper;
+import com.example.dellpc.khabri.utils.MvpApp;
 import com.example.dellpc.khabri.utils.Utility;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -33,7 +37,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.Random;
 
-public class Splash extends Activity {
+public class SplashActivity extends Activity  implements SplashMvpView{
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     final String[] textlist = {"24 Hour News Source", "It’s a New Story Here.", "News From Your Neighborhood", "See It First Here."};
@@ -42,64 +46,66 @@ public class Splash extends Activity {
      */
     protected Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
-    private String TAG = Splash.class.getSimpleName();
+    private String TAG = SplashActivity.class.getSimpleName();
     /**
      * Provides the entry point to the Fused Location Provider API.
      */
     private FusedLocationProviderClient mFusedLocationClient;
-    private Preference mPref;
-    private TextView message;
+    private SharedPrefsHelper mPref;
+
+    SplashPresenter mSplashPresenter;
+
+    public static Intent getStartIntent(Context context) {
+        return new Intent(context, SplashActivity.class);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
 
+
+
+        DataManager dataManager = ((MvpApp) getApplication()).getDataManager();
+
+        mSplashPresenter = new SplashPresenter(dataManager);
+        mSplashPresenter.onAttach(this);
+
+        mSplashPresenter.iniliatizeAddtionalClients();
+        mSplashPresenter.checkInternet();
+    }
+
+
+
+    @Override
+    public boolean isOnline() {
+        return Utility.isOnline(SplashActivity.this);
+    }
+
+    @Override
+    public void initializeClients() {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(Splash.this)
+        mGoogleApiClient = new GoogleApiClient.Builder(SplashActivity.this)
                 .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
 
-        mPref=new Preference(Splash.this);
-        checkLocationPermission();
-        message=findViewById(R.id.message);
+        mPref=new SharedPrefsHelper(SplashActivity.this);
+
+        TextView message = findViewById(R.id.message);
         Random rand = new Random();
 
         int  n = rand.nextInt(textlist.length);
         message.setText(textlist[n]);
-        //50 is the maximum and the 1 is our minimum
     }
 
-    private void checkLocationPermission() {
-        if (Utility.isOnline(getApplicationContext())) {
-            if (!checkPermissions()) {
 
-                startLocationPermissionRequest();
-                        /*Permission_explainer permission_explainer= new Permission_explainer(SplashActivity.this,false);
-                        permission_explainer.setCancelable(true);
-                        permission_explainer.show();
-                        permission_explainer.setCanceledOnTouchOutside(false);
-                        permission_explainer .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(final DialogInterface arg0) {
-                                // do something
-                                startLocationPermissionRequest();
-                            }
-                        });*/
-                //   requestPermissions();
-            } else {
-                getLastLocation();
-            }
-        } else {
-            dialognointernet();
-        }
-    }
-
-    private void getLastLocation() {
+    @Override
+    public void getLastLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            startLocationPermissionRequest();
+           mSplashPresenter.requestPermission();
             return;
         } else {
             mFusedLocationClient.getLastLocation()
@@ -112,23 +118,21 @@ public class Splash extends Activity {
                                 mPref.setLatitude(String.valueOf(mLastLocation.getLatitude()));
                                 mPref.setLongitude(String.valueOf(mLastLocation.getLongitude()));
 
-                                if (Utility.isOnline(getApplicationContext())) {
+                                if (Utility.isOnline(SplashActivity.this)) {
                                     new Handler().postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
-                                            startActivity( new Intent(Splash.this,Dashboard.class));
+                                            startActivity( new Intent(SplashActivity.this,Dashboard.class));
                                         }
                                     },1500);
-
-
-                                    // callmethod(String.valueOf(mLastLocation.getLatitude()),String.valueOf(mLastLocation.getLongitude()));
+                                    ;
 
                                 } else {
-                                    dialognointernet();
+                                    mSplashPresenter.noInternet();
                                 }
 
                             } else {
-                                showSettingDialog();
+                               mSplashPresenter.enableLocation();
                             }
 
 
@@ -138,25 +142,30 @@ public class Splash extends Activity {
 
     }
 
-
     /**
      * Return the current state of the permissions needed.
      */
-    private boolean checkPermissions() {
+    @Override
+    public boolean CheckLocationPermission() {
         int permissionState = ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
         return permissionState == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void startLocationPermissionRequest() {
-        ActivityCompat.requestPermissions(Splash.this,
+
+    @Override
+    public void startLocationPermissionRequest() {
+        ActivityCompat.requestPermissions(SplashActivity.this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 REQUEST_PERMISSIONS_REQUEST_CODE);
     }
-    private void dialognointernet()
+
+
+    @Override
+    public void dialognointernet()
     {
 
-        AlertDialog dialog = new AlertDialog.Builder(Splash.this)
+        AlertDialog dialog = new AlertDialog.Builder(SplashActivity.this)
                 .setTitle("Connection Failed")
                 .setMessage("Please check your internet connection.")
 
@@ -165,14 +174,14 @@ public class Splash extends Activity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        checkLocationPermission();
+                        mSplashPresenter.checkInternet();
                     }
                 })
                 .setNeutralButton("Show Saved data",new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                        Toast.makeText(Splash.this,"No saved stories available. Please enable internet connection",Toast.LENGTH_LONG).show();
+                        Toast.makeText(SplashActivity.this,"No saved stories available. Please enable internet connection",Toast.LENGTH_LONG).show();
 
 
 
@@ -182,7 +191,8 @@ public class Splash extends Activity {
         dialog.show();
     }
 
-    private void showSettingDialog()
+    @Override
+    public void showSettingDialog()
     {
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);//Setting priotity of Location request to high
@@ -206,7 +216,7 @@ public class Splash extends Activity {
                         // requests here.
                         //updateGPSStatus("GPS is Enabled in your device");
 
-                        getLastLocation();
+                       mSplashPresenter.getUserLocation();
 
 
                         break;
@@ -216,7 +226,7 @@ public class Splash extends Activity {
                         try {
                             // Show the dialog by calling startResolutionForResult(),
                             // and check the result in onActivityResult().
-                            status.startResolutionForResult(Splash.this, REQUEST_CHECK_SETTINGS);
+                            status.startResolutionForResult(SplashActivity.this, REQUEST_CHECK_SETTINGS);
                         } catch (IntentSender.SendIntentException e) {
                             e.printStackTrace();
                             // Ignore the error.
@@ -226,7 +236,7 @@ public class Splash extends Activity {
                             mPref.setLatitude("28.5355");
                             mPref.setLongitude("77.3910");
 
-                        startActivity( new Intent(Splash.this,Dashboard.class));
+                        startActivity( new Intent(SplashActivity.this,Dashboard.class));
                         // continuewithoutinternet();
 
 
@@ -237,6 +247,7 @@ public class Splash extends Activity {
             }
         });
     }
+
 
 }
 

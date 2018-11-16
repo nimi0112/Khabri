@@ -54,8 +54,7 @@ public class Utility
             connection.setDoInput(true);
             connection.connect();
             InputStream input = connection.getInputStream();
-            Bitmap bitmap = BitmapFactory.decodeStream(input);
-            return bitmap;
+            return BitmapFactory.decodeStream(input);
 
         } catch (Exception e) {
             e.printStackTrace();
